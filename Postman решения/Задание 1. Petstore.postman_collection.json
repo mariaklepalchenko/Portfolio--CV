@@ -1,0 +1,94 @@
+{
+	"info": {
+		"_postman_id": "6de77aca-7ccd-464f-b5d3-ae74c14bbb68",
+		"name": "Petstore",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "22183380"
+	},
+	"item": [
+		{
+			"name": "Добавление нового питомца", 
+			/* 
+			Создать нового питомца (метод POST /pet)
+			Прописать скрипт, который берет из тела ответа id созданного питомца и записывает в 
+			окружение. Cкрипт прописан  во вкладке «tests», для записи переменной в окружение 
+			использовался скрипт:  pm.environment
+			*/
+			
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"console.log(pm.test);\r",
+							"\r",
+							"var jsonData = pm.response.json();\r",
+							"pm.environment.set(\"petId\", jsonData.id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"id\": {{nameId}},\r\n  \"category\": {\r\n    \"id\": 0,\r\n    \"name\": \"string\"\r\n  },\r\n  \"name\": \"doggie\",\r\n  \"photoUrls\": [\r\n    \"string\"\r\n  ],\r\n  \"tags\": [\r\n    {\r\n      \"id\": 0,\r\n      \"name\": \"string\"\r\n    }\r\n  ],\r\n  \"status\": \"available\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "https://petstore.swagger.io/v2/pet"
+			},
+			"response": []
+		},
+		{
+			"name": "Получение данных о питомце",
+			/*
+			Запросить питомца по id (метод GET /pet/{petId}) используя в запросе ранее записанную переменную из окружения
+             Прописать скрипт, который будет брать тело ответа, менять параметр «status» на 
+             «sold» (продан) и перенаправлять его в запрос на изменение питомца (метод PUT/pet). 
+			 Скрипт прописан во вкладке «tests», для перенаправления запроса использовался pm.sendRequest
+			*/
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"jsonData.status = 'sold';\r",
+							"\r",
+							"const statusSold = {\r",
+							"    url: 'https://petstore.swagger.io/v2/pet/',\r",
+							"    header: 'Content-Type: application/json',\r",
+							"    method: 'PUT',\r",
+							"    body: {\r",
+							"        mode: \"raw\",\r",
+							"        raw: JSON.stringify(jsonData)\r",
+							"    }\r",
+							"}\r",
+							"\r",
+							"pm.sendRequest(statusSold, function (err, response) {\r",
+							"    console.log('Успех');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "https://petstore.swagger.io/v2/pet/{{petId}}"
+			},
+			"response": []
+		}
+	]
+}
